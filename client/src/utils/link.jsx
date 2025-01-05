@@ -9,7 +9,7 @@ import { IoMdPersonAdd } from "react-icons/io";
 import { FaWalking } from "react-icons/fa";
 import { AiFillDatabase } from "react-icons/ai";
 import { IoPeopleSharp } from "react-icons/io5";
-import { FaUserDoctor } from "react-icons/fa6";
+import { FaUserNurse } from "react-icons/fa";
 
 
 const links = [
@@ -46,7 +46,7 @@ const links = [
   {
     text: "จัดการแพทย์",
     path: "all-doctor",
-    icon: <FaUserDoctor />,
+    icon: <FaUserNurse />,
   },
   {
     text: "จัดการแอดมิน",
