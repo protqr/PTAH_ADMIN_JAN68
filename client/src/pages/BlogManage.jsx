@@ -1,220 +1,106 @@
-// import React, { useContext, createContext, useEffect } from "react";
-// import { toast } from "react-toastify";
-// import customFetch from "../utils/customFetch.js";
-// import PostContainer from "../assets/components/PostContainer.jsx";
-// import AddButton from "../assets/components/AddButton.jsx";
-// import AllHeader from "../assets/components/AllHeader.jsx";
-// import { useLoaderData, useNavigate } from "react-router-dom";
-// import { MdOutlineAutoDelete } from "react-icons/md";
-
-// // Loader function for fetching posts
-// export const loader = async ({ request }) => {
-//   const params = Object.fromEntries([
-//     ...new URL(request.url).searchParams.entries(),
-//   ]);
-
-//   try {
-//     const { data } = await customFetch.get("/posts", {
-//       params,
-//     });
-//     return {
-//       data,
-//     };
-//   } catch (error) {
-//     toast.error(error?.response?.data?.msg);
-//     return error;
-//   }
-// };
-
-// const AllPostContext = createContext();
-
-// const BlogManage = () => {
-//   const { data } = useLoaderData();
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (data && data.posts) {
-//       console.log(data.posts);
-//     } else {
-//       console.log("No post to display");
-//     }
-//   }, [data]);
-
-//   return (
-//     <AllPostContext.Provider value={{ data }}>
-//       <PostContainer />
-//     </AllPostContext.Provider>
-//   );
-// };
-
-// export const useAllPostContext = () => useContext(AllPostContext);
-
-// export default BlogManage;
-
-import React, { useState } from "react";
-import {
-  FaUserCircle,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaTrash,
-} from "react-icons/fa"; // นำเข้าไอคอน
+import React, { useState, useEffect } from "react";
+import { FaTrash, FaUserCircle } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-toastify";
+import AllHeader from "../assets/components/AllHeader.jsx";
 
 const BlogManage = () => {
-  const [activeTab, setActiveTab] = useState("pending");
+  const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const { data } = await axios.get("/api/v1/posts");
+        setPosts(data.posts);
+        setFilteredPosts(data.posts);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Error fetching posts");
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const handleDelete = async (postId) => {
+    if (window.confirm("คุณต้องการลบกระทู้นี้ใช่หรือไม่?")) {
+      try {
+        await axios.delete(`/api/v1/posts/${postId}`);
+        const updatedPosts = posts.filter((post) => post._id !== postId);
+        setPosts(updatedPosts);
+        setFilteredPosts(updatedPosts);
+        toast.success("ลบกระทู้เรียบร้อยแล้ว");
+      } catch (error) {
+        toast.error("เกิดข้อผิดพลาดในการลบกระทู้");
+        console.error("Error deleting post:", error);
+      }
+    }
   };
+
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    const filtered = posts.filter((post) =>
+      post.title.toLowerCase().includes(term)
+    );
+    setFilteredPosts(filtered);
+  };
+
+  if (loading) return <p>Loading posts...</p>;
 
   return (
     <div className="max-w-4xl mx-auto my-8">
-      <div className="flex justify-center items-center space-x-8 mb-6 border-b-1">
-        {/* <button
-          onClick={() => handleTabClick("pending")}
-          className={`pb-2 font-bold ${
-            activeTab === "pending"
-              ? "border-b-2 border-[#d30000] text-[#d30000]"
-              : "text-gray-500"
-          }`}
-        >
-          ยังไม่อนุมัติ
-        </button> */}
-        {/* <div className="h-12 w-0.5 bg-gray-500 mb-2"></div> */}
-        <button
-          onClick={() => handleTabClick("approved")}
-          className={`pb-2 font-bold ${
-            activeTab === "approved"
-              ? "border-b-2 border-[#7b7b7b] text-[#7b7b7b]"
-              : "text-gray-500"
-          }`}
-        >
-          กระทู้ทั้งหมด
-        </button>
+     
+      <AllHeader>
+        กระทู้ทั้งหมด {posts.length} กระทู้
+      </AllHeader>
+      
+    
+      <div className="mt-8 mb-8">
+        <input
+          type="text"
+          placeholder="ค้นหากระทู้..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="w-full p-3 border rounded-lg"
+        />
       </div>
+      
 
-      {activeTab === "pending" && (
-        <div>
-          {/* Card 1 */}
-          <div className="border p-6 rounded-lg shadow-lg bg-white mb-6">
+      {/* แสดงรายการโพสต์ */}
+      {filteredPosts.length > 0 ? (
+        filteredPosts.map((post) => (
+          <div
+            key={post._id}
+            className="border p-6 rounded-lg shadow-lg bg-white mb-6"
+          >
             <div className="flex justify-between items-center mb-4">
-              <div className="text-lg font-semibold">
-                ถ้าผู้ป่วยไม่ยอมทานอาหารเลย ควรทำยังไงดีคะ
-              </div>
+              <div className="text-lg font-semibold">{post.title}</div>
               <div className="text-sm text-gray-400">
-                20 ตุลาคม 2567 เวลา 18:13 น.
+                {new Date(post.createdAt).toLocaleString()}
               </div>
             </div>
-            <p className="text-gray-700 mb-4">
-              สวัสดีค่ะ คือช่วงนี้คุณยายเราทานอาหารยากมากๆ เลยค่ะ
-              เลยอยากจะสอบถามว่ามีวิธีไหนที่จะทำให้ท่านทานอาหารบ้างคะ ขอบคุณค่ะ
-            </p>
+            <p className="text-gray-700 mb-4">{post.content}</p>
             <div className="text-sm text-gray-500 mb-2 flex items-center">
-              <FaUserCircle className="h-6 w-6 text-gray-500 mr-2" />{" "}
-              <span className="font-semibold">โดย นxxxx รxxxx</span>
+              <FaUserCircle className="h-6 w-6 text-gray-500 mr-2" />
+              <span className="font-semibold">{post.postedBy}</span>
             </div>
             <div className="flex justify-end space-x-4">
-              <button className="flex items-center text-red-500 font-semibold hover:text-red-700">
+              <button
+                onClick={() => handleDelete(post._id)}
+                className="flex items-center text-red-500 font-semibold hover:text-red-700"
+              >
                 <FaTrash className="mr-1 h-4 w-4" /> ลบกระทู้
               </button>
             </div>
           </div>
-
-          {/* Card 2 */}
-          <div className="border p-6 rounded-lg shadow-lg bg-white mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-lg font-semibold">
-                มีอาการคลื่นไส้ ไม่อยากกินอาหารมา 3 วันแล้ว
-              </div>
-              <div className="text-sm text-gray-400">
-                19 ตุลาคม 2567 เวลา 19:57 น.
-              </div>
-            </div>
-            <p className="text-gray-700 mb-4">
-              อยากอาเจียนกับไม่อยากกินอาหารมา3วันแล้วค่ะ เกิดจากอะไรเหรอคะ
-            </p>
-            <div className="text-sm text-gray-500 mb-2 flex items-center">
-              <FaUserCircle className="h-6 w-6 text-gray-500 mr-2" />{" "}
-              <span className="font-semibold">โดย จxxxx ชxxxx</span>
-            </div>
-            <div className="flex justify-end space-x-4">
-              <button className="flex items-center text-red-500 font-semibold hover:text-red-700">
-                <FaTrash className="mr-1 h-4 w-4" /> ลบกระทู้
-              </button>
-            </div>
-          </div>
-
-          <div className="border p-6 rounded-lg shadow-lg bg-white mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-lg font-semibold">กลืนน้ำลายแล้วเจ็บคอ</div>
-              <div className="text-sm text-gray-400">
-                15 ตุลาคม 2567 เวลา 15:23 น.
-              </div>
-            </div>
-            <p className="text-gray-700 mb-4">
-              อยากอาเจียนกับไม่อยากกินอาหารมา3วันแล้วค่ะ เกิดจากอะไรเหรอคะ
-            </p>
-            <div className="text-sm text-gray-500 mb-2 flex items-center">
-              <FaUserCircle className="h-6 w-6 text-gray-500 mr-2" />{" "}
-              <span className="font-semibold">โดย สxxxx อxxxx</span>
-            </div>
-            <div className="flex justify-end space-x-4">
-              <button className="flex items-center text-red-500 font-semibold hover:text-red-700">
-                <FaTrash className="mr-1 h-4 w-4" /> ลบกระทู้
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === "approved" && (
-        <div>
-          <div className="border p-6 rounded-lg shadow-lg bg-white mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-lg font-semibold">กลืนน้ำลายแล้วเจ็บคอ</div>
-              <div className="text-sm text-gray-400">
-                15 ตุลาคม 2567 เวลา 15:23 น.
-              </div>
-            </div>
-            <p className="text-gray-700 mb-4">
-              อยากอาเจียนกับไม่อยากกินอาหารมา3วันแล้วค่ะ เกิดจากอะไรเหรอคะ
-            </p>
-            <div className="text-sm text-gray-500 mb-2 flex items-center">
-              <FaUserCircle className="h-6 w-6 text-gray-500 mr-2" />{" "}
-              <span className="font-semibold">โดย สxxxx อxxxx</span>
-            </div>
-            <div className="flex justify-end space-x-4">
-              <button className="flex items-center text-red-500 font-semibold hover:text-red-700">
-                <FaTrash className="mr-1 h-4 w-4" /> ลบกระทู้
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <div className="border p-6 rounded-lg shadow-lg bg-white mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="text-lg font-semibold">
-                  กลืนน้ำลายแล้วเจ็บคอ
-                </div>
-                <div className="text-sm text-gray-400">
-                  14 ตุลาคม 2567 เวลา 13:02 น.
-                </div>
-              </div>
-              <p className="text-gray-700 mb-4">
-                มีอาการกลืนลำบากค่ะ เนื่องจากเวลากลืนอาหาร หรือน้ำลายจะเจ็บคอ
-                เป็นมา2วันแล้วค่ะ สาเหตุเกิดจากอะไรเหรอคะ
-              </p>
-              <div className="text-sm text-gray-500 mb-2 flex items-center">
-                <FaUserCircle className="h-6 w-6 text-gray-500 mr-2" />{" "}
-                <span className="font-semibold">โดย สxxxx nxxxx</span>
-              </div>
-              <div className="flex justify-end space-x-4">
-                <button className="flex items-center text-red-500 font-semibold hover:text-red-700">
-                  <FaTrash className="mr-1 h-4 w-4" /> ลบกระทู้
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        ))
+      ) : (
+        <p>ไม่พบกระทู้ที่ตรงกับคำค้นหา</p>
       )}
     </div>
   );

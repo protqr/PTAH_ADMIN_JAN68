@@ -1,24 +1,19 @@
-import { Router } from "express";
-const router = Router();
-
+import express from "express";
 import {
   getAllPost,
-  getPost,
   createPost,
+  getPost,
   updatePost,
   deletePost,
 } from "../controllers/PostController.js";
-import {
-  validatePostInput,
-  validateIdParam5,
-} from "../middleware/validationMiddleware.js";
 
-router.route("/").get(getAllPost).post(validatePostInput, createPost);
+const router = express.Router();
 
+router.route("/").get(getAllPost).post(createPost);
 router
   .route("/:_id")
-  .get(validateIdParam5, getPost)
-  .patch(validateIdParam5, updatePost)
-  .delete(validateIdParam5, deletePost);
+  .get(getPost)
+  .patch(updatePost)
+  .delete(deletePost);
 
 export default router;
