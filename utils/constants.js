@@ -50,7 +50,7 @@ export const PREFIXDOCTOR = {
 export const GENDER = {
   GENDER_01: "ชาย",
   GENDER_02: "หญิง",
-}
+};
 
 export const POSTURES_SORT_BY = {
   NEWEST_FIRST: "ใหม่ที่สุด",
@@ -59,3 +59,24 @@ export const POSTURES_SORT_BY = {
   ENG_DESCENDING: "เรียงจาก ฮ-ก",
 };
 
+export const NOTIFY_TARGET_GROUP = {
+  ALL: "ผู้ใช้ทั้งหมด",
+  UNDER_TREATMENT: "ผู้ป่วยที่มีสถานะกำลังรักษาอยู่",
+};
+
+export const NOTIFY_TYPE = {
+  IMPORTANT: "การแจ้งเตือนสำคัญ",
+  GENERAL: "การแจ้งเตือนทั่วไป",
+};
+
+export const NOTIFY_STATUS = {
+  PENDING: "รอการส่ง",
+  SENT: "เผยแพร่แล้ว",
+};
+
+export const NOTIFY_SORT_BY = {
+  NEWEST_FIRST: "ใหม่ล่าสุด",
+  OLDEST_FIRST: "เก่าที่สุด",
+  ENG_ASCENDING: "เรียงหัวข้อจาก ก-ฮ",
+  ENG_DESCENDING: "เรียงหัวข้อจาก ฮ-ก",
+};

@@ -31,6 +31,9 @@ import {
   SoftDeleteAdmin,
   DeletePost,
   // AddAdmin,
+  AllNotification,
+  AddNotification,
+  SoftDeleteNotification,
 } from "./pages";
 
 import { action as registerAction } from "./pages/Register";
@@ -57,6 +60,8 @@ import { loader as alladminLoader } from "./pages/AllAdmin";
 import { action as deleteAdminAction } from "./pages/DeleteAdmin";
 // import { loader as allpostLoader } from "./pages/BlogManage";
 // import { action as deletePostAction } from "./pages/DeletePost";
+import { loader as allNotificationLoader } from "./pages/AllNotification";
+import { loader as editNotificationLoader } from "./pages/AddNotification";
 
 
 
@@ -172,6 +177,20 @@ const router = createBrowserRouter([
             loader: alladminLoader,
           },
           {
+            path: "all-notification",
+            element: <AllNotification />,
+            loader: allNotificationLoader,
+          },
+          {
+            path: "add-notification",
+            element: <AddNotification />,
+          },
+          {
+            path: "edit-notification/:_id",
+            element: <AddNotification />,
+            loader: editNotificationLoader,
+          },
+          {
             path: "delete-admin/:_id",
             element: <DeleteAdmin />,
             action: deleteAdminAction,
@@ -212,6 +231,10 @@ const router = createBrowserRouter([
           {
             path: "history-deleted-admin",
             element: <SoftDeleteAdmin />,
+          },
+          {
+            path: "history-deleted-notification",
+            element: <SoftDeleteNotification />,
           },
         ],
       },
