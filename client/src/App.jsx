@@ -30,6 +30,7 @@ import {
   SoftDeleteDoctor,
   SoftDeleteAdmin,
   DeletePost,
+  AddNotification,
   // AddAdmin,
 } from "./pages";
 
@@ -212,6 +213,10 @@ const router = createBrowserRouter([
           {
             path: "history-deleted-admin",
             element: <SoftDeleteAdmin />,
+          },
+          {
+            path: "add-notification",
+            element: <AddNotification />,
           },
         ],
       },
