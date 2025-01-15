@@ -16,6 +16,8 @@ import userRouter from './routes/userRouter.js';
 import PostureRouter from './routes/PostureRouter.js';
 import DoctorRouter from './routes/DoctorRouter.js';
 import PostRouter from "./routes/PostRouter.js";
+import FileRouter from "./routes/FileRouter.js";
+import NotificationRouter from "./routes/NotificationRouter.js";
 
 // middleware
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js';
@@ -57,6 +59,8 @@ app.use('/api/v1/users', authenticateUser, userRouter);
 app.use('/api/v1/postures', authenticateUser, PostureRouter);
 app.use('/api/v1/MPersonnel', authenticateUser, DoctorRouter);
 app.use("/api/v1/posts", authenticateUser, PostRouter);
+app.use("/api/v1/files", authenticateUser, FileRouter);
+app.use("/api/v1/notifications", authenticateUser, NotificationRouter);
 
 // ไม่พบข้อมูล
 app.use('*', (req, res) => {
