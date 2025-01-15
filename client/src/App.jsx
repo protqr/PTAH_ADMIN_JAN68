@@ -30,6 +30,7 @@ import {
   SoftDeleteDoctor,
   SoftDeleteAdmin,
   DeletePost,
+  AddNotification,
   // AddAdmin,
   AllNotification,
   AddNotification,
@@ -235,6 +236,11 @@ const router = createBrowserRouter([
           {
             path: "history-deleted-notification",
             element: <SoftDeleteNotification />,
+          },
+          {
+            path: "add-notification",
+            element: <AddNotification />,
+            },
           },
         ],
       },
