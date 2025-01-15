@@ -1,52 +1,25 @@
 import mongoose from "mongoose";
-import { TYPEPOSTURES } from "../utils/constants.js";
-
 const NotificationSchema = new mongoose.Schema(
   {
-    userType: {
-      type: String,
-      enum: Object.values(TYPEPOSTURES),
-      default: TYPEPOSTURES.TYPE_1,
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    notifyDate: { type: Date, required: true },
+    targetGroup: { type: String, required: true },
+    file: {
+      id: String,
+      name: String,
+      url: String,
+      size: Number,
     },
-    nameNoti: String,
-    noPostures: String,
-    Description: String,
-    imageUrls: [String], // Changed from imageUrl: String
-    createdBy: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
+    notifyType: { type: String, required: true },
+    createdBy: { type: mongoose.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Types.ObjectId, ref: "User" },
+    status: { type: String, required: true },
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Notification", NotificationSchema);
+const NotificationModel = mongoose.model("Notification", NotificationSchema);
+export default NotificationModel;
 
-// import mongoose from "mongoose";
-// import { TYPEPOSTURES } from "../utils/constants.js";
-
-// const PostureSchema = new mongoose.Schema(
-//   {
-//     userType: {
-//       type: String,
-//       enum: Object.values(TYPEPOSTURES),
-//       default: TYPEPOSTURES.TYPE_1,
-//     },
-//     namePostures: String,
-//     noPostures: String,
-//     Description: String,
-//     imageUrl: String,
-//     videoUrl: String,
-//     createdBy: {
-//       type: mongoose.Types.ObjectId,
-//       ref: "User",
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// export default mongoose.model("Posture", PostureSchema);

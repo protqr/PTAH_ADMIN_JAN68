@@ -5,7 +5,7 @@ import { ImProfile } from "react-icons/im";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { MdComment } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
-import { IoMdPersonAdd } from "react-icons/io";
+import { IoMdNotificationsOutline, IoMdPersonAdd } from "react-icons/io";
 import { FaWalking } from "react-icons/fa";
 import { AiFillDatabase } from "react-icons/ai";
 import { IoPeopleSharp } from "react-icons/io5";
@@ -53,6 +53,11 @@ const links = [
     text: "จัดการแอดมิน",
     path: "all-admin",
     icon: <IoMdPersonAdd />,
+  },
+  {
+    text: "จัดการแจ้งเตือน",
+    path: "all-notification",
+    icon: <IoMdNotificationsOutline />,
   },
   // {
   //   text: "โปรไฟล์",
