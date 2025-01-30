@@ -7,7 +7,8 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import 'express-async-errors';
 import cookieParser from 'cookie-parser';
-import { nanoid } from 'nanoid';
+import cron from 'node-cron';
+import admin from "firebase-admin";
 
 // routers
 import PatientRouter from './routes/PatientRouter.js';
@@ -22,6 +23,9 @@ import NotificationRouter from "./routes/NotificationRouter.js";
 // middleware
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js';
 import { authenticateUser } from './middleware/authMiddleware.js';
+
+// controller
+import { checkNotifications } from './controllers/NotificationController.js';
 
 // public
 import { dirname } from 'path';
@@ -41,6 +45,11 @@ cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
+});
+
+// Firebase
+admin.initializeApp({
+  credential: admin.credential.cert("./firebase-service-account.json"),
 });
 
 app.use(cookieParser());
@@ -76,6 +85,11 @@ try {
   await mongoose.connect(process.env.MONGO_URL);
   app.listen(port, () => {
     console.log(`server running on PORT ${port}....`);
+  });
+
+  // Schedule the cron job to run every minute
+  cron.schedule("* * * * *", () => {
+    checkNotifications(); 
   });
 } catch (error) {
   console.log(error);
