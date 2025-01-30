@@ -33,7 +33,6 @@ import {
   // AddNotification,
   // AddAdmin,
   AllNotification,
-  AddNotification,
   SoftDeleteNotification,
 } from "./pages";
 
@@ -237,8 +236,12 @@ const router = createBrowserRouter([
             path: "history-deleted-notification",
             element: <SoftDeleteNotification />,
           },
-        ],
-      },
+          {
+            path: "add-notification",
+            element: <AddNotification />,
+          },
+        ]
+      } 
     ],
   },
 ]);

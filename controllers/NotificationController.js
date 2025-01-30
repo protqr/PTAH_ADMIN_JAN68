@@ -1,7 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import NotificationModel from "../models/NotificationModel.js";
 import { BadRequestError, NotFoundError } from "../errors/customError.js";
-import { NOTIFY_STATUS } from "../utils/constants.js";
+import { FIREBASE_TOPIC, NOTIFY_STATUS, NOTIFY_TARGET_GROUP } from "../utils/constants.js";
+import admin from "firebase-admin";
 
 export const getAllNotifications = async (req, res) => {
   const { search, sort, isDeleted } = req.query;
@@ -190,5 +191,45 @@ export const findNotification = async (req, res) => {
     res.status(StatusCodes.OK).json(notiItem);
   } catch (error) {
     throw error;
+  }
+};
+
+export const checkNotifications = async () => {
+  console.log("🚀  checkNotifications: checking...")
+  const now = new Date();
+  try {
+    const notifications = await NotificationModel.find({
+      notifyDate: { $lte: now },
+      status: NOTIFY_STATUS.PENDING,
+      isDeleted: false,
+    });
+
+    for (const notiItem of notifications) {
+      await sendPushNotification(notiItem);
+
+      // Update the status to "Sent"
+      notiItem.status = NOTIFY_STATUS.SENT;
+      await notiItem.save();
+    }
+  } catch (error) {
+    console.error("Error checking notifications:", error);
+  }
+};
+
+export const sendPushNotification = async (notiItem) => {
+  const message = {
+    notification: {
+      title: notiItem.title,
+      body: notiItem.description,
+    },
+    topic: notiItem.targetGroup === NOTIFY_TARGET_GROUP.ALL ?
+      FIREBASE_TOPIC.ALL : FIREBASE_TOPIC.UNDER_TREATMENT
+  };
+
+  try {
+    await admin.messaging().send(message);
+    console.log(`Notification sent: ${notiItem.title}`);
+  } catch (error) {
+    console.error("Error sending notification:", error);
   }
 };

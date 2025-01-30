@@ -80,3 +80,8 @@ export const NOTIFY_SORT_BY = {
   ENG_ASCENDING: "เรียงหัวข้อจาก ก-ฮ",
   ENG_DESCENDING: "เรียงหัวข้อจาก ฮ-ก",
 };
+
+export const FIREBASE_TOPIC = {
+  ALL: "ALL",
+  UNDER_TREATMENT: "UNDER_TREATMENT",
+};
