@@ -25,20 +25,21 @@ const Register = () => {
   const isSubmitting = navigation.state === 'submitting';
   return (
     <Wrapper>
-      <Form method='post' className='form'>
+      <Form method="post" className="form">
         {/* <Logo /> */}
         <h4>เพิ่มแอดมิน</h4>
-        <FormRow type='text' name='name' defaultValue='' />
+        <FormRow type="text" name="username" defaultValue="" />
+        <FormRow type="text" name="name" defaultValue="" />
         <FormRow
-          type='text'
-          name='lastName'
-          labelText='last name'
-          defaultValue=''
+          type="text"
+          name="surname"
+          labelText="surname"
+          defaultValue=""
         />
-        <FormRow type='email' name='email' defaultValue='' />
-        <FormRow type='password' name='password' defaultValue='' />
-        <button type='submit' className='btn btn-block' disabled={isSubmitting}>
-          {isSubmitting ? 'submitting...' : 'submit'}
+        <FormRow type="email" name="email" defaultValue="" />
+        <FormRow type="password" name="password" defaultValue="" />
+        <button type="submit" className="btn btn-block" disabled={isSubmitting}>
+          {isSubmitting ? "submitting..." : "submit"}
         </button>
         {/* <p>
           Already a member?

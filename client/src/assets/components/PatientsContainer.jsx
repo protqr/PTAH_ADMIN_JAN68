@@ -41,7 +41,7 @@ const PatientsContainer = () => {
         </thead>
         <tbody>
           {patients.map((patient) => {
-            return <Patient key={patient.idPatient} {...patient} />;
+            return <Patient key={patient.username} {...patient} />;
           })}
         </tbody>
       </table>

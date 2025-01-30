@@ -62,8 +62,8 @@ const EditPatient = () => {
 
   const navigation = useNavigate();
   const isSubmitting = navigation.state === "submitting";
-  const [selectedUserGender, setSelectedUserGender] = useState(
-    patient.userGender || ""
+  const [selectedgender, setSelectedgender] = useState(
+    patient.gender || ""
   );
   const [selectedUserType, setSelectedUserType] = useState(
     patient.userType || ""
@@ -99,7 +99,7 @@ const EditPatient = () => {
   }, []);
 
   const handleUserTypeChange = (event) => {
-    setSelectedUserGender(event.target.value);
+    setSelectedgender(event.target.value);
     setSelectedUserType(event.target.value);
     setSelectedUserStatus(event.target.value);
     setSelectedYouhaveCaregiver(event.target.value);
@@ -124,10 +124,10 @@ const EditPatient = () => {
         <div className="form-center">
           <FormRow
             type="text"
-            name="idNumber"
+            name="ID_card_number"
             labelText="หมายเลขบัตรประชาชน"
             pattern="[0-9]*"
-            defaultValue={patient.idNumber}
+            defaultValue={patient.ID_card_number}
           />
 
           <div className="row">
@@ -141,26 +141,51 @@ const EditPatient = () => {
               />
               <FormRow
                 type="text"
-                name="namePatient"
+                name="name"
                 labelText="ชื่อผู้ป่วย"
-                defaultValue={patient.namePatient}
+                defaultValue={patient.name}
               />
-              <FormRow
-                type="text"
-                name="lastnamePatient"
-                labelText="นามสกุลผู้ป่วย"
-                defaultValue={patient.lastnamePatient}
-              />
-            </div>
-
-            <div className="column2">
               <FormRow
                 type="text"
                 name="sickness"
                 labelText="โรคหรืออาการของผู้ป่วย"
                 defaultValue={patient.sickness}
               />
+              <FormRowSelect
+                labelText="เพศ"
+                name="gender"
+                value={selectedgender}
+                onChange={handleUserTypeChange}
+                list={Object.values(GENDER)}
+                defaultValue={patient.gender}
+              />
+              <FormRow
+                type="text"
+                name="email"
+                labelText="อีเมล"
+                defaultValue={patient.email}
+              />
+              <FormRow
+                type="text"
+                name="nationality"
+                labelText="สัญชาติ"
+                defaultValue={patient.nationality}
+              />
+            </div>
 
+            <div className="column2">
+              <FormRow
+                type="text"
+                name="username"
+                labelText="ชื่อผู้ใช้"
+                defaultValue={patient.username}
+              />
+              <FormRow
+                type="text"
+                name="surname"
+                labelText="นามสกุลผู้ป่วย"
+                defaultValue={patient.surname}
+              />
               <FormRowSelect
                 labelText="เลือกสถานะปัจจุบันของคนไข้"
                 name="userStatus"
@@ -169,13 +194,23 @@ const EditPatient = () => {
                 list={Object.values(TYPESTATUS)}
                 defaultValue={patient.userStatus}
               />
-              <FormRowSelect
-                labelText="เพศ"
-                name="userGender"
-                value={selectedUserGender}
-                onChange={handleUserTypeChange}
-                list={Object.values(GENDER)}
-                defaultValue={patient.userGender}
+              <FormRow
+                type="date"
+                name="birthday"
+                labelText="วันเกิด"
+                defaultValue={patient.birthday}
+              />
+              <FormRow
+                type="text"
+                name="tel"
+                labelText="เบอร์โทร"
+                defaultValue={patient.tel}
+              />
+              <FormRow
+                type="text"
+                name="Address"
+                labelText="ที่อยู่"
+                defaultValue={patient.Address}
               />
             </div>
           </div>
@@ -201,50 +236,50 @@ const EditPatient = () => {
               name="youhaveCaregiver"
               value={selectedYouhaveCaregiver}
               onChange={handleUserTypeChange}
-              list={Object.values(HAVECAREGIVER)}
-              defaultValue={patient.youhaveCaregiver}
+              list={[
+                "โปรดเลือกว่ามีผู้ดูแลหรือไม่?",
+                ...Object.values(HAVECAREGIVER),
+              ]}
+              defaultValue={
+                patient.youhaveCaregiver || "โปรดเลือกว่ามีผู้ดูแลหรือไม่?"
+              }
             />
 
-            <div className="row">
-              <div className="column1">
-                {selectedYouhaveCaregiver === HAVECAREGIVER.TYPE_CGV1 && (
-                  <>
-                    <FormRow
-                      type="text"
-                      name="nameCaregiver"
-                      labelText="ชื่อจริง (ผู้ดูแล)"
-                      defaultValue={patient.nameCaregiver}
-                    />
-                    <FormRow
-                      type="text"
-                      name="lastnameCaregiver"
-                      labelText="นามสกุล (ผู้ดูแล)"
-                      defaultValue={patient.lastnameCaregiver}
-                    />
-                    <FormRow
-                      type="tel"
-                      name="telCaregiver"
-                      labelText="เบอร์โทรศัพท์ผู้ดูแล"
-                      defaultValue={patient.telCaregiver}
-                    />
-                  </>
-                )}
-              </div>
-
-              <div className="column2">
-                {selectedYouhaveCaregiver === HAVECAREGIVER.TYPE_CGV1 && (
+            {selectedYouhaveCaregiver === HAVECAREGIVER.TYPE_CGV1 && (
+              <div className="row">
+                <div className="column1">
+                  <FormRow
+                    type="text"
+                    name="nameCaregiver"
+                    labelText="ชื่อจริง (ผู้ดูแล)"
+                    defaultValue={patient.nameCaregiver || ""}
+                  />
+                  <FormRow
+                    type="text"
+                    name="lastnameCaregiver"
+                    labelText="นามสกุล (ผู้ดูแล)"
+                    defaultValue={patient.lastnameCaregiver || ""}
+                  />
+                  <FormRow
+                    type="tel"
+                    name="telCaregiver"
+                    labelText="เบอร์โทรศัพท์ผู้ดูแล"
+                    defaultValue={patient.telCaregiver || ""}
+                  />
+                </div>
+                <div className="column2">
                   <FormRowRadio
                     name="caregiverRelations"
                     list={Object.values(RELATIONS)}
-                    value={selectedRelation}
+                    value={selectedRelation || patient.caregiverRelations}
                     onChange={handleRelationChange}
                     otherOption={RELATIONS.OTHER}
-                    otherValue={otherRelation}
+                    otherValue={otherRelation || patient.otherRelation || ""}
                     onOtherChange={handleOtherRelationChange}
                   />
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* <br /> */}

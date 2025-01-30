@@ -15,7 +15,7 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const errors = { msg: "" };
-  if (data.password.length < 3) {
+  if (data.password.length < 1) {
     errors.msg = "password too short";
     return errors;
   }
@@ -40,7 +40,7 @@ const Login = () => {
         <Logo />
         <h4>Login</h4>
         {errors && <p style={{ color: "red" }}>{errors.msg}</p>}
-        <FormRow type="email" name="email" defaultValue="" />
+        <FormRow type="username" name="username" defaultValue="" />
         <FormRow type="password" name="password" defaultValue="" />
         <button type="submit" className="btn btn-block" disabled={isSubmitting}>
           {isSubmitting ? "submitting..." : "submit"}

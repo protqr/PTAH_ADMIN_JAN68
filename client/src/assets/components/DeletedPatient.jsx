@@ -41,8 +41,8 @@ const DeletedPatient = () => {
     }
   };
 
-    const formatIdPatient = (idPatient) => {
-      return idPatient.slice(0, 8) + "x".repeat(6);
+    const formatUserName = (username) => {
+      return username.slice(0, 8) + "x".repeat(6);
     };
 
   return (
@@ -59,9 +59,9 @@ const DeletedPatient = () => {
         {deletedpatients.map((patient) => {
           return (
             <tbody key={patient._id}>
-              <td>{formatIdPatient(patient.idPatient)}</td>
+              <td>{formatUserName(patient.username)}</td>
               <td>
-                {patient.namePatient} {patient.lastnamePatient}
+                {patient.name} {patient.surname}
               </td>
               <td>{patient.userStatus}</td>
               <td>

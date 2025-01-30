@@ -56,22 +56,37 @@ export const validatePatientInput = withValidationErrors([
         throw new BadRequestError("หมายเลขผู้ป่วยซ้ำ");
       }
     }),
-  body("idNumber")
+  body("ID_card_number")
     .notEmpty()
     .withMessage("โปรดกรอกหมายเลขบัตรประชาชนให้ถูกต้อง")
     .custom(async (value) => {
-      // Check if idNumber already exists in the database
-      const existingIDCard = await Patient.findOne({ idNumber: value });
+      // Check if ID_card_number already exists in the database
+      const existingIDCard = await Patient.findOne({ ID_card_number: value });
       if (existingIDCard) {
         throw new BadRequestError("หมายเลขบัตรประชาชนซ้ำ");
       }
     }),
-  body("namePatient").notEmpty().withMessage("โปรดกรอกชื่อผู้ป่วยให้ถูกต้อง"),
-  body("lastnamePatient")
+  body("username")
     .notEmpty()
-    .withMessage("โปรดกรอกนามสกุลผู้ป่วยให้ถูกต้อง"),
+    .withMessage("โปรดกรอกชื่อผู้ใช้")
+    .custom(async (value) => {
+      // Check if username already exists in the database
+      const existingUsername = await Patient.findOne({ username: value });
+      if (existingUsername) {
+        throw new BadRequestError("ชื่อผู้ใช้นี้มีอยู่ในระบบแล้ว");
+      }
+    }),
+  body("email").notEmpty().withMessage("โปรดกรอกอีเมล"),
+  body("name").notEmpty().withMessage("โปรดกรอกชื่อผู้ป่วยให้ถูกต้อง"),
+  body("surname").notEmpty().withMessage("โปรดกรอกนามสกุลผู้ป่วยให้ถูกต้อง"),
+  body("birthday").notEmpty().withMessage("โปรดกรอกวันเกิด"),
+  body("tel").notEmpty().withMessage("โปรดกรอกเบอร์โทรผู้ป่วย"),
+  body("nationality")
+    .notEmpty()
+    .withMessage("โปรดกรอกสัญชาติผู้ป่วยให้ถูกต้อง"),
+  body("Address").notEmpty().withMessage("โปรดกรอกที่อยู่ผู้ป่วยให้ถูกต้อง"),
   body("sickness").notEmpty().withMessage("โปรดกรอกโรคของผู้ป่วยให้ถูกต้อง"),
-  body("userGender")
+  body("gender")
     .notEmpty()
     .isIn(Object.values(GENDER))
     .withMessage("โปรดเลือกเพศผู้ป่วยให้ถูกต้อง"),

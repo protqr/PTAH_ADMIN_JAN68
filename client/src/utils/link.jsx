@@ -10,7 +10,7 @@ import { FaWalking } from "react-icons/fa";
 import { AiFillDatabase } from "react-icons/ai";
 import { IoPeopleSharp } from "react-icons/io5";
 import { FaUserNurse } from "react-icons/fa";
-import { MdNotificationAdd } from "react-icons/md";
+import { IoMdNotifications } from "react-icons/io";
 
 
 const links = [
@@ -57,18 +57,13 @@ const links = [
   {
     text: "จัดการแจ้งเตือน",
     path: "all-notification",
-    icon: <IoMdNotificationsOutline />,
+    icon: <IoMdNotifications />,
   },
   // {
   //   text: "โปรไฟล์",
   //   path: "profile",
   //   icon: <ImProfile />,
   // },
-  {
-    text: "จัดการแจ้งเตือน",
-    path: "admin",
-    icon: <MdNotificationAdd />,
-  },
   // {
   //   text: "ออกจากระบบ",
   //   path: "admin",

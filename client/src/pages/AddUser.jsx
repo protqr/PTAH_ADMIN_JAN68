@@ -23,38 +23,43 @@ import {
 import { toast } from "react-toastify";
 import customFetch from "../utils/customFetch";
 
-const isIdPatientDuplicate = async (idPatient) => {
+const isUserNameDuplicate = async (username) => {
   try {
-    const response = await customFetch.get(`/allusers?idPatient=${idPatient}`);
+    const response = await customFetch.get(`/allusers?username=${username}`);
     return response.data.length > 0;
   } catch (error) {
-    console.error("Error checking duplicate idPatient:", error);
+    console.error("Error checking duplicate username:", error);
     return false;
   }
 };
 
-const isIdCardDuplicate = async (idNumber) => {
+const isIdCardDuplicate = async (ID_card_number) => {
   try {
-    const response = await customFetch.get(`/allusers?idNumber=${idNumber}`);
+    const response = await customFetch.get(`/allusers?ID_card_number=${ID_card_number}`);
     return response.data.length > 0;
   } catch (error) {
-    console.error("Error checking duplicate idNumber:", error);
+    console.error("Error checking duplicate ID_card_number:", error);
     return false;
   }
 };
 
 export const action = async ({ request }) => {
   try {
-    const formData = new FormData();
     const data = await request.formData();
     const idPatient = data.get("idPatient");
-    const idNumber = data.get("idNumber");
-    const namePatient = data.get("namePatient");
-    const lastnamePatient = data.get("lastnamePatient");
+    const ID_card_number = data.get("ID_card_number");
+    const username = data.get("username");
+    const email = data.get("email");
+    const name = data.get("name");
+    const surname = data.get("surname");
+    const tel = data.get("tel");
+    const nationality = data.get("nationality");
+    const Address = data.get("Address");
+    const birthday = data.get("birthday");
     const sickness = data.get("sickness");
-    const userGender = data.get("userGender");
-    const userType = data.get("userType");
-    const userPostsData = data.get("userPostsDummy");
+    const gender = data.get("gender");
+    // const userType = data.get("userType");
+    // const userPostsData = data.get("userPosts");
     const userStatus = data.get("userStatus");
     const nameCaregiver = data.get("nameCaregiver");
     const lastnameCaregiver = data.get("lastnameCaregiver");
@@ -63,9 +68,10 @@ export const action = async ({ request }) => {
     const otherRelations = data.get("otherRelations");
     const youhaveCaregiver = data.get("youhaveCaregiver");
 
-    const isDuplicate = await isIdPatientDuplicate(idPatient);
+    // ตรวจสอบความซ้ำซ้อนของข้อมูล
+    const isDuplicate = await isUserNameDuplicate(username);
     if (isDuplicate) {
-      toast.error("หมายเลขผู้ป่วยซ้ำกัน โปรดเลือกหมายเลขอื่น");
+      toast.error("ชื่อผู้ใช้ซ้ำกัน โปรดกรอกชื่อผู้ใช้ใหม่");
       return null;
     }
 
@@ -74,13 +80,13 @@ export const action = async ({ request }) => {
       return null;
     }
 
-    const isDuplicate2 = await isIdCardDuplicate(idNumber);
+    const isDuplicate2 = await isIdCardDuplicate(ID_card_number);
     if (isDuplicate2) {
       toast.error("หมายเลขบัตรประชาชนซ้ำกัน โปรดเลือกหมายเลขอื่น");
       return null;
     }
 
-    if (!/^[0-9]+$/.test(idNumber)) {
+    if (!/^[0-9]+$/.test(ID_card_number)) {
       toast.error("หมายเลขบัตรประชาชนต้องเป็นตัวเลขเท่านั้น");
       return null;
     }
@@ -97,19 +103,22 @@ export const action = async ({ request }) => {
       }
     }
 
-    for (const [key, value] of data.entries()) {
-      formData.append(key, value);
-    }
-
+    // สร้างข้อมูลผู้ป่วย
     const patientData = {
       idPatient: idPatient,
-      idNumber: idNumber,
-      namePatient: namePatient,
-      lastnamePatient: lastnamePatient,
+      ID_card_number: ID_card_number,
+      username: username,
+      email: email,
+      name: name,
+      surname: surname,
+      tel: tel,
+      nationality: nationality,
+      Address: Address,
+      birthday: birthday,
       sickness: sickness,
-      userGender: userGender,
-      userType: userType,
-      userPosts: userPostsData,
+      gender: gender,
+      // userType: userType,
+      // userPosts: userPostsData,
       userStatus: userStatus,
       youhaveCaregiver: youhaveCaregiver,
       nameCaregiver: nameCaregiver,
@@ -120,7 +129,9 @@ export const action = async ({ request }) => {
         caregiverRelations === RELATIONS.OTHER ? otherRelations : "",
     };
 
+
     console.log("Sending request:", patientData);
+    // ส่งข้อมูลเป็น JSON
     await customFetch.post("/allusers", patientData);
     toast.success("เพิ่มข้อมูลคนไข้เรียบร้อยแล้ว");
     return redirect("/dashboard/all-patient");
@@ -130,17 +141,20 @@ export const action = async ({ request }) => {
   }
 };
 
+
+
 const AddUser = () => {
   const { user } = useOutletContext();
   const navigation = useNavigation();
 
   const isSubmitting = navigation.state === "submitting";
 
-  const handleUserPostsChange = (selectedOptions) => {
-    setSelectedUserPosts(selectedOptions);
-  };
+const handleUserPostsChange = (selectedOptions) => {
+  setSelectedUserPosts(selectedOptions);
+};
 
-  const [selectedUserGender, setSelectedUserGender] = useState(GENDER.GENDER_01);
+
+  const [selectedgender, setSelectedgender] = useState(GENDER.GENDER_01);
   const [selectedUserType, setSelectedUserType] = useState(TYPEPOSTURES.TYPE_1);
   const [selectedUserPosts, setSelectedUserPosts] = useState([]);
   const [selectedUserStatus, setSelectedUserStatus] = useState(TYPESTATUS.TYPE_ST1);
@@ -163,7 +177,7 @@ const AddUser = () => {
   }, [selectedUserPosts]);
 
   const handleUserTypeChange = (event) => {
-    setSelectedUserGender(event.target.value);
+    setSelectedgender(event.target.value);
     setSelectedUserType(event.target.value);
     setSelectedUserStatus(event.target.value);
     setSelectedYouhaveCaregiver(event.target.value);
@@ -188,7 +202,7 @@ const AddUser = () => {
         <div className="form-center">
           <FormRow
             type="text"
-            name="idNumber"
+            name="ID_card_number"
             labelText="หมายเลขบัตรประชาชน"
             pattern="[0-9]*"
           />
@@ -200,19 +214,25 @@ const AddUser = () => {
                 labelText="หมายเลขผู้ป่วย"
                 pattern="[0-9]*"
               />
-              <FormRow type="text" name="namePatient" labelText="ชื่อผู้ป่วย" />
-              <FormRow
-                type="text"
-                name="lastnamePatient"
-                labelText="นามสกุลผู้ป่วย"
-              />
-            </div>
-            <div className="column2">
+              <FormRow type="text" name="name" labelText="ชื่อผู้ป่วย" />
               <FormRow
                 type="text"
                 name="sickness"
                 labelText="โรคหรืออาการของผู้ป่วย"
               />
+              <FormRowSelect
+                labelText="เพศ"
+                name="gender"
+                value={selectedgender}
+                onChange={handleUserTypeChange}
+                list={Object.values(GENDER)}
+              />
+              <FormRow type="text" name="email" labelText="อีเมล" />
+              <FormRow type="text" name="nationality" labelText="สัญชาติ" />
+            </div>
+            <div className="column2">
+              <FormRow type="text" name="username" labelText="ชื่อผู้ใช้" />
+              <FormRow type="text" name="surname" labelText="นามสกุลผู้ป่วย" />
               <FormRowSelect
                 labelText="เลือกสถานะปัจจุบันของคนไข้"
                 name="userStatus"
@@ -220,24 +240,21 @@ const AddUser = () => {
                 onChange={handleUserTypeChange}
                 list={Object.values(TYPESTATUS)}
               />
-              <FormRowSelect
-                labelText="เพศ"
-                name="userGender"
-                value={selectedUserGender}
-                onChange={handleUserTypeChange}
-                list={Object.values(GENDER)}
-              />
+              <FormRow type="date" name="birthday" labelText="วันเกิด" />
+              <FormRow type="text" name="tel" labelText="เบอร์โทร" />
+              <FormRow type="text" name="Address" labelText="ที่อยู่" />
             </div>
           </div>
-          <FormRowMultiSelect
+          {/* <FormRowMultiSelect
             type="textarea"
             name="userPosts"
             labelText="เลือกท่ากายภาพบำบัด"
             options={["ท่าทั้งหมด", ...postures.map((p) => p.namePostures)]}
             value={selectedUserPosts}
             onChange={handleUserPostsChange}
-          />
-          <input name="userPostsDummy" value={selectedUserPosts} hidden></input>
+          /> */}
+
+          {/* <input name="userPostsDummy" value={selectedUserPosts} hidden></input> */}
         </div>
         <br />
         <br />

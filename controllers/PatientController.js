@@ -13,11 +13,15 @@ export const getAllPatients = async (req, res) => {
   } else {
     queryObject.isDeleted = { $nin: [true] };
   }
+
+  // เพิ่มเงื่อนไข physicalTherapy ต้องเป็น true
+  queryObject.physicalTherapy = true;
+
   if (search) {
     queryObject.$or = [
-      { idPatient: { $regex: search, $options: "i" } },
-      { namePatient: { $regex: search, $options: "i" } },
-      { lastnamePatient: { $regex: search, $options: "i" } },
+      { username: { $regex: search, $options: "i" } },
+      { name: { $regex: search, $options: "i" } },
+      { surname: { $regex: search, $options: "i" } },
     ];
   }
 
@@ -29,13 +33,12 @@ export const getAllPatients = async (req, res) => {
     queryObject.userType = userType;
   }
 
-const sortOptions = {
-  ใหม่ที่สุด: "-createdAt",
-  เก่าที่สุด: "createdAt",
-  "เรียงจาก ก-ฮ": "-name",
-  "เรียงจาก ฮ-ก": "name",
-};
-
+  const sortOptions = {
+    ใหม่ที่สุด: "-createdAt",
+    เก่าที่สุด: "createdAt",
+    "เรียงจาก ก-ฮ": "-name",
+    "เรียงจาก ฮ-ก": "name",
+  };
 
   const sortKey = sortOptions[sort] || sortOptions.ใหม่ที่สุด;
 
@@ -56,27 +59,57 @@ const sortOptions = {
     .json({ totalPatients, numOfPages, currentPage: page, allusers });
 };
 
+// export const createPatient = async (req, res) => {
+//   // Extract username from request body
+//   const { _id } = req.body;
+
+//   // Check if username already exists in the database
+//   const existingPatient = await Patient.findOne({ _id });
+//   if (existingPatient) {
+//     return res
+//       .status(StatusCodes.BAD_REQUEST)
+//       .json({ message: "username already exists" });
+//   }
+
+//   // If username does not exist, proceed to create new patient
+//   req.body.createdBy = req.user.userId;
+//   const patientuser = await Patient.create(req.body);
+//   res.status(StatusCodes.CREATED).json({ patientuser });
+// };
+
 export const createPatient = async (req, res) => {
-  // Extract idPatient from request body
-  const { _id } = req.body;
+  try {
+    const { _id, username, name, email } = req.body;
 
-  // Check if idPatient already exists in the database
-  const existingPatient = await Patient.findOne({ _id });
-  if (existingPatient) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "idPatient already exists" });
+    console.log("Request body:", req.body);
+
+    if (!_id || !username || !name || !email) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Missing required fields" });
+    }
+
+    const existingPatient = await Patient.findOne({ _id });
+    if (existingPatient) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Patient with this ID already exists" });
+    }
+
+    req.body.createdBy = req.user?.userId || "unknown"; // Handle missing userId
+    const patientuser = await Patient.create(req.body);
+    res.status(StatusCodes.CREATED).json({ patientuser });
+  } catch (error) {
+    console.error("Error in createPatient:", error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal Server Error", error: error.message });
   }
-
-  // If idPatient does not exist, proceed to create new patient
-  req.body.createdBy = req.user.userId;
-  const patientuser = await Patient.create(req.body);
-  res.status(StatusCodes.CREATED).json({ patientuser });
 };
 
 export const getPatient = async (req, res) => {
   const patient = await Patient.findById(req.params._id);
-  if (!patient) throw new NotFoundError(`no patient with id : ${idPatient}`);
+  if (!patient) throw new NotFoundError(`no patient with id : ${username}`);
   res.status(StatusCodes.OK).json({ patient });
 };
 
@@ -99,7 +132,7 @@ export const updatePatient = async (req, res) => {
 //   const removedPatient = await Patient.findByIdAndDelete(req.params._id);
 
 //   if (!removedPatient)
-//     throw new NotFoundError(`no patient with id : ${idPatient}`);
+//     throw new NotFoundError(`no patient with id : ${username}`);
 //   res.status(StatusCodes.OK).json({ patient: removedPatient });
 // };
 
@@ -137,14 +170,19 @@ export const showStats = async (req, res) => {
 
   const totalPatients = await Patient.countDocuments(); // นับจำนวนผู้ป่วยทั้งหมด
 
+  const totalphysicalTherapyPatients = await Patient.countDocuments({
+    physicalTherapy: true,
+  });
+
   const defaultStats = {
     กำลังรักษา: stats.กำลังรักษาอยู่ || 0,
     จบการรักษา: stats.จบการรักษา || 0,
     ผู้ป่วยทั้งหมด: totalPatients || 0,
+    ผู้ป่วยที่ทำกายภาพบำบัด: totalphysicalTherapyPatients || 0,
   };
 
   let monthlyApplications = await Patient.aggregate([
-    { $match: { createdBy: new mongoose.Types.ObjectId(req.user.userId) } },
+    { $match: { physicalTherapy: true } },
     {
       $group: {
         _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
@@ -171,5 +209,36 @@ export const showStats = async (req, res) => {
     })
     .reverse();
 
-  res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications });
+      let monthlyApplications2 = await Patient.aggregate([
+        { $match: { createdAt: { $exists: true } } },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id.year": -1, "_id.month": -1 } },
+        { $limit: 6 },
+      ]);
+
+      monthlyApplications2 = monthlyApplications2
+        .map((item) => {
+          const {
+            _id: { year, month },
+            count,
+          } = item;
+
+          const date = day()
+            .month(month - 1)
+            .year(year)
+            .format("MMM YYYY");
+
+          return { date, count };
+        })
+        .reverse();
+
+  res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications, monthlyApplications2 });
 };

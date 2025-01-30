@@ -27,9 +27,16 @@ const StatsSubject = styled.h4`
 
 const StatsContainer = ({ defaultStats }) => {
   const stats = [
+    // {
+    //   title: "กำลังรักษา",
+    //   count: `${defaultStats?.กำลังรักษา || 0} คน`,
+    //   icon: <GiHeartPlus />,
+    //   color: "#f8ba51",
+    //   bcg: "#fcefc7",
+    // },
     {
-      title: "กำลังรักษา",
-      count: `${defaultStats?.กำลังรักษา || 0} คน`,
+      title: "ผู้ป่วยที่ทำกายภาพบำบัด",
+      count: `${defaultStats?.ผู้ป่วยที่ทำกายภาพบำบัด || 0} คน`,
       icon: <GiHeartPlus />,
       color: "#f8ba51",
       bcg: "#fcefc7",

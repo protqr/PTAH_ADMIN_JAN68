@@ -15,7 +15,8 @@ export const loader = async () => {
 
 
 const Stats = () => {
-  const { defaultStats, monthlyApplications } = useLoaderData();
+  const { defaultStats, monthlyApplications, monthlyApplications2 } =
+    useLoaderData();
 
   return (
     <>
@@ -24,6 +25,9 @@ const Stats = () => {
         <ChartsContainer data={monthlyApplications} />
       )}
 
+      {monthlyApplications2?.length > 1 && (
+        <ChartsContainer data={monthlyApplications2} />
+      )}
     </>
   );
 };

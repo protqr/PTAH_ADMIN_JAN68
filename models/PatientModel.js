@@ -10,18 +10,24 @@ import {
 const PatientSchema = new mongoose.Schema(
   {
     idPatient: String, // หมายเลขผู้ป่วย
-    idNumber: String, // หมายเลขบัตรประชาชน
-    namePatient: String, // ชื่อผู้ป่วย
-    lastnamePatient: String, // นามสกุลผู้ป่วย
-    userGender: {
+    username: { type: String, required: true, unique: true },
+    ID_card_number: { type: String, required: true, unique: true },
+    password: String,
+    email: { type: String, sparse: true },
+    name: String, // ชื่อผู้ป่วย
+    surname: String, // นามสกุลผู้ป่วย
+    gender: {
       type: String,
       enum: Object.values(GENDER),
       default: GENDER.GENDER_01,
     },
+    birthday: Date,
+    tel: String, // เบอร์โทรผู้ป่วย
+    nationality: String, // สัญชาติ
+    Address: String, // ที่อยู่
     userType: {
       type: String,
-      enum: Object.values(TYPEPOSTURES),
-      default: TYPEPOSTURES.TYPE_1,
+      default: null,
     },
     sickness: String, // อาการของผู้ป่วย
     userPosts: String, // ท่ากายภาพบำบัดที่เลือก
@@ -38,11 +44,17 @@ const PatientSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // ระบุว่าลบข้อมูลแล้วหรือไม่
     },
+    // deletedAt: { type: Date, default: null },
+    // deleteExpiry: { type: Date, default: null },
+    // AdddataFirst: { type: Boolean, default: false },
+    physicalTherapy: { type: Boolean, default: true },
+    isEmailVerified: { type: Boolean, default: false },
+
     // ข้อมูลผู้ดูแล
     youhaveCaregiver: {
       type: String,
       enum: Object.values(HAVECAREGIVER),
-      default: HAVECAREGIVER.TYPE_CGV1,
+      default: null,
     },
     nameCaregiver: String, // ชื่อผู้ดูแล
     lastnameCaregiver: String, // นามสกุลผู้ดูแล
@@ -59,7 +71,10 @@ const PatientSchema = new mongoose.Schema(
       },
     },
   },
-  { timestamps: true } // กำหนดให้บันทึกวันที่สร้างและแก้ไขข้อมูล
+  {
+    collection: "User",
+    timestamps: true,
+  } // กำหนดให้บันทึกวันที่สร้างและแก้ไขข้อมูล
 );
 
 export default mongoose.model("Patient", PatientSchema);

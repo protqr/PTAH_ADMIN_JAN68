@@ -16,8 +16,9 @@ export const action = async ({ request }) => {
   try {
     const formData = new FormData();
     const data = await request.formData();
+    const username = data.get("username");
     const name = data.get("name");
-    const lastname = data.get("lastname");
+    const surname = data.get("surname");
     const email = data.get("email");
     const password = data.get("password");
 
@@ -29,8 +30,9 @@ export const action = async ({ request }) => {
     }
 
     const adminData = {
+      username: username,
       name: name,
-      lastname: lastname,
+      surname: surname,
       email: email,
       password: password,
     };
@@ -57,10 +59,11 @@ const AddAdmin = () => {
       <Form method="post" className="form">
         <h4 className="form-title">เพิ่มข้อมูลแอดมิน</h4>
         <div className="form-center">
+          <FormRow type="text" name="username" labelText="ชื่อผู้ใช้" />
 
           <FormRow type="text" name="name" labelText="ชื่อ" />
 
-          <FormRow type="text" name="lastname" labelText="นามสกุล" />
+          <FormRow type="text" name="surname" labelText="นามสกุล" />
 
           <FormRow type="text" name="email" labelText="อีเมล" />
 
